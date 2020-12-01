@@ -1,4 +1,4 @@
- <!-- Inspired by Paudyal@github -->
+
 <html>
   <head>
     <meta charset="UTF-8" />
@@ -11,11 +11,11 @@
         overflow: hidden !important;
       }
     </style>
-    <script src="https://threejs.org/build/three.min.js" type="text/javascript"></script>
-    <script src="https://threejs.org/examples/js/controls/TrackballControls.js" type="text/javascript"></script>
-    <script src="https://threejs.org/examples/js/libs/dat.gui.min.js" type="text/javascript"></script>
-    <script src="https://threejs.org/examples/js/loaders/PLYLoader.js" type="text/javascript"></script>
-    <script>
+    <script type='module'>
+      import * as THREE from 'https://threejs.org/build/three.module.js';
+      import { GUI } from 'https://threejs.org/examples/jsm/libs/dat.gui.module.js';
+      import { TrackballControls } from 'https://threejs.org/examples/jsm/controls/TrackballControls.js';
+      import { PLYLoader } from 'https://threejs.org/examples/jsm/loaders/PLYLoader.js';
 
       var scene, camera, renderer, effect, ambientLight, light, controls;
       var floor;
@@ -38,7 +38,7 @@
         directionalLight.position.set( 10, 100, 10 );
         scene.add( directionalLight );
 
-        //  Part 3 (add 2 pointlights)
+        // two pointlights
         var pointLight1 = new THREE.PointLight( 0x3600e8, 1, 1000 );
         pointLight1.position.set( 100, 0, 0 );
         scene.add( pointLight1 );
@@ -47,35 +47,40 @@
         pointLight2.position.set( -100, 0, 0 );
         scene.add( pointLight2 );
         var loader = new THREE.PLYLoader();
+
+        // mesh with diffrent material
         loader.load('armadillo.ply', function (geometry) {
           geometry.computeVertexNormals();
           toonMaterial = new THREE.MeshToonMaterial( {
              color: 0x2cfa
-          } );
+          });
           mesh = new THREE.Mesh( geometry, toonMaterial );
           scene.add( mesh );
           mesh.position.set(-100, 0, 0);
           mesh.rotateY( Math.PI );
-
-        } );
-
-        loader.load('armadillo.ply', function (geometry) {
+        });
+         
+         // another mesh with diffrent material
+        loader.load('westworld.gltf', function (geometry) {
           geometry.computeVertexNormals();
-          physicalMaterial = new THREE.MeshPhysicalMaterial( {
+          westworldMaterial = new THREE.MeshWestworldMaterial( {
              color: 0x8270d9
-          } );
+          });
 
-          mesh = new THREE.Mesh( geometry, physicalMaterial );
+          mesh = new THREE.Mesh( geometry, westworldMaterial );
           scene.add( mesh );
           mesh.position.set(100, 0, 0);
           mesh.rotateY( Math.PI );
 
-        } );
+        });
 
         controller = {
           'color': 0xffffff
         }
-
+        
+        // we can use this single color
+        // container for all colors in the scene 
+        // if we modify the onChange callback (see below)
         var gui = new dat.GUI();
         var ambientFolder = gui.addFolder('Ambient Light');
         ambientFolder.addColor(controller, 'color').onChange( function(value) { 
@@ -90,7 +95,8 @@
         directionalFolder.add(directionalLight.position, 'z', -100, 100);
         directionalFolder.open();
 
-        //  Part 4 (control the color and position of point lights)
+        // control the color and position of point lights
+        // control the color of both materials in the scene
         var pointLight1Folder = gui.addFolder('Point Light 1');
         pointLight1Folder.addColor(controller, 'color').onChange( function(value) { 
           pointLight1.color.setHex(value); });
@@ -107,16 +113,17 @@
         pointLight2Folder.add(pointLight2.position, 'z', -100, 100);
         pointLight2Folder.open();
 
-        //  Part 5 (control the color of both materials in the scene)
+        // control the color of both materials in the scene)
         var toonMaterialFolder = gui.addFolder('Toon Material');
         toonMaterialFolder.addColor(controller, 'color').onChange( function(value) { 
           toonMaterial.color.setHex(value); });
         toonMaterialFolder.open();
 
-        var physicalMaterialFolder = gui.addFolder('Physical Material');
-        physicalMaterialFolder.addColor(controller, 'color').onChange( function(value) {
-         physicalMaterial.color.setHex(value); });
-        physicalMaterialFolder.open();
+        // the following block of code is inspired by Paudyal@github
+        var westworldMaterialFolder = gui.addFolder('Westworld Material');
+        westworldMaterialFolder.addColor(controller, 'color').onChange( function(value) {
+         westworldMaterial.color.setHex(value); });
+        westworldMaterialFolder.open();
 
         var materialFolder = gui.addFolder('Switch Material');
         
