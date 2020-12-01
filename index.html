@@ -117,6 +117,18 @@
         pointLight2Folder.add(pointLight2.position, 'z', -100, 100);
         pointLight2Folder.open();
 
+        var toonMaterialFolder = gui.addFolder('Toon Material');
+        toonMaterialFolder.addColor(controller, 'color').onChange( function(value) { 
+          toonMaterial.color.setHex(value); });
+        toonMaterialFolder.open();
+
+        var westworldMaterialFolder = gui.addFolder('westworld Material');
+        westworldMaterialFolder.addColor(controller, 'color').onChange( function(value) { 
+          westworldMaterial.color.setHex(value); });
+        westworldMaterialFolder.open();
+
+        var materialFolder = gui.addFolder('Switch Material');
+
         gui.open();
         controls = new TrackballControls( camera, renderer.domElement );
         animate();
